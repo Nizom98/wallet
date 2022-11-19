@@ -3,8 +3,7 @@ package rest
 import "example.com/wallet/internal/models"
 
 type Handler struct {
-	manWallet models.WalletManager
-	manNotify models.WalletManager
+	manWallet  models.WalletManager
 	repoWallet models.WalletRepository
 }
 
@@ -13,22 +12,22 @@ type CreateWalletRequest struct {
 }
 
 type CreateWalletResponse struct {
-	ID string `json:"id"`
-	Name string `json:"name"`
+	ID     string `json:"id"`
+	Name   string `json:"name"`
 	Status string `json:"status"`
 }
 
 type WalletListResponse struct {
-	ID string `json:"id"`
-	Name string `json:"name"`
+	ID      string  `json:"id"`
+	Name    string  `json:"name"`
 	Balance float64 `json:"balance"`
-	Status string `json:"status"`
+	Status  string  `json:"status"`
 }
 
 type StatusResponse struct {
-	Success bool `json:"success"`
-	ErrMessage string `json:"err_message,omitempty"`
-	Data interface{} `json:"data,omitempty"`
+	Success    bool        `json:"success"`
+	ErrMessage string      `json:"err_message,omitempty"`
+	Data       interface{} `json:"data,omitempty"`
 }
 
 type WalletDepositWithdrawRequest struct {
@@ -36,8 +35,8 @@ type WalletDepositWithdrawRequest struct {
 }
 
 type WalletTransferRequest struct {
-	Amount float64 `json:"amount"`
-	TransferTo string `json:"transfer_to"`
+	Amount     float64 `json:"amount"`
+	TransferTo string  `json:"transfer_to"`
 }
 
 type WalletUpdateNameRequest struct {

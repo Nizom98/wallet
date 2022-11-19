@@ -1,10 +1,10 @@
 package repository
 
 type wallet struct {
-	id string `json:"id"`
-	name string `json:"name"`
-	balance float64 `json:"balance"`
-	status bool `json:"status"`
+	id      string
+	name    string
+	balance float64
+	status  bool
 }
 
 func (wal *wallet) ID() string {
@@ -22,4 +22,3 @@ func (wal *wallet) Balance() float64 {
 func (wal *wallet) Status() bool {
 	return wal.status
 }
-

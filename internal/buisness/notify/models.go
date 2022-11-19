@@ -2,11 +2,11 @@ package notify
 
 import "example.com/wallet/internal/models"
 
-const  (
-	eventWalletCreated = "Wallet_Created"
-	eventWalletDeleted = "Wallet_Deleted"
-	eventWalletDeposited = "Wallet_Deposited"
-	eventWalletWithdrawn = "Wallet_Withdrawn"
+const (
+	eventWalletCreated    = "Wallet_Created"
+	eventWalletDeleted    = "Wallet_Deleted"
+	eventWalletDeposited  = "Wallet_Deposited"
+	eventWalletWithdrawn  = "Wallet_Withdrawn"
 	eventWalletTransfered = "Wallet_Transfered"
 )
 
@@ -17,4 +17,9 @@ type msgSender interface {
 type notify struct {
 	manWallet models.WalletManager
 	msgSender msgSender
+}
+
+type eventData struct {
+	Type   string  `json:"type"`
+	Amount float64 `json:"amount"`
 }

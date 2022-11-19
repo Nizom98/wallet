@@ -7,16 +7,20 @@ import (
 	"example.com/wallet/internal/clients/nsq"
 	"example.com/wallet/internal/repository"
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
 const (
-	nsqTopic = "nsq_test"
+	nsqTopic  = "nsq_test"
 	nsqTarget = "127.0.0.1:9999"
+	appAddr   = ":80"
+	logLevel  = log.DebugLevel
 )
 
+func main() {
+	log.SetLevel(logLevel)
 
-func main()  {
 	nsq, err := nsq.NewClient(nsqTopic, nsqTarget)
 	if err != nil {
 		panic(err)
@@ -33,15 +37,19 @@ func main()  {
 	}
 
 	r := mux.NewRouter()
-	r.HandleFunc("/wallet/", handler.WalletCreateHandler).Methods(http.MethodPost)
-	r.HandleFunc("/wallets/{id}/", handler.WalletByIDHandler).Methods(http.MethodGet)
-	r.HandleFunc("/wallets/", handler.WalletListHandler).Methods(http.MethodGet)
-	r.HandleFunc("/wallets/{id}/", handler.WalletUpdateHandler).Methods(http.MethodPut)
-	r.HandleFunc("/wallets/{id}/", handler.WalletDeactivateHandler).Methods(http.MethodDelete)
-	r.HandleFunc("/wallets/{id}/deposit/", handler.WalletDepositHandler).Methods(http.MethodPost)
-	r.HandleFunc("/wallets/{id}/withdraw/", handler.WalletWithdrawHandler).Methods(http.MethodPost)
-	r.HandleFunc("/wallets/{id}/transfer/", handler.WalletTransferHandler).Methods(http.MethodPost)
+	r.HandleFunc("/wallet/", handler.MiddlewareLog(handler.WalletCreateHandler)).Methods(http.MethodPost)
+	r.HandleFunc("/wallets/{id}/", handler.MiddlewareLog(handler.WalletByIDHandler)).Methods(http.MethodGet)
+	r.HandleFunc("/wallets/", handler.MiddlewareLog(handler.WalletListHandler)).Methods(http.MethodGet)
+	r.HandleFunc("/wallets/{id}/", handler.MiddlewareLog(handler.WalletUpdateHandler)).Methods(http.MethodPut)
+	r.HandleFunc("/wallets/{id}/", handler.MiddlewareLog(handler.WalletDeactivateHandler)).Methods(http.MethodDelete)
+	r.HandleFunc("/wallets/{id}/deposit/", handler.MiddlewareLog(handler.WalletDepositHandler)).Methods(http.MethodPost)
+	r.HandleFunc("/wallets/{id}/withdraw/", handler.MiddlewareLog(handler.WalletWithdrawHandler)).Methods(http.MethodPost)
+	r.HandleFunc("/wallets/{id}/transfer/", handler.MiddlewareLog(handler.WalletTransferHandler)).Methods(http.MethodPost)
 
-	err = http.ListenAndServe(":80", r)
+	log.Infof("app started on: %s", appAddr)
+	defer func() {
+		log.Infof("app finished on: %s", appAddr)
+	}()
+	err = http.ListenAndServe(appAddr, r)
 	panic(err)
 }

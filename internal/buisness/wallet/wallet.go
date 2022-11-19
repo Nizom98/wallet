@@ -2,20 +2,22 @@ package wallet
 
 import (
 	"errors"
+	"fmt"
+
 	"example.com/wallet/internal/models"
 	"example.com/wallet/internal/utils"
-	"fmt"
 )
 
 const (
 	defaultBalance = 0
-	defaultStatus = true
+	defaultStatus  = true
 )
 
 var (
 	errAmountLessThanOne = errors.New("amount cannot be less than 1")
-	errEmptyName = errors.New("empty wallet name")
-	errNotEnoughBalance = errors.New("wallet has not enough balance")
+	errEmptyName         = errors.New("empty wallet name")
+	errNotEnoughBalance  = errors.New("wallet has not enough balance")
+	errSameWallet        = errors.New("same wallet")
 )
 
 type manager struct {
@@ -65,10 +67,10 @@ func (man *manager) IncreaseBalanceBy(id string, amount float64) error {
 	errTx := man.repo.Transaction(func(repo models.WalletRepository) error {
 		wallet, err := repo.ByID(id)
 		if err != nil {
-			return fmt.Errorf("wallet %s: %w", wallet.ID(), err)
+			return fmt.Errorf("wallet %s: %w", id, err)
 		}
 
-		newBalance := wallet.Balance()+amount
+		newBalance := wallet.Balance() + amount
 		return repo.UpdateByID(id, nil, utils.PtrFloat64(newBalance), nil)
 	})
 
@@ -86,10 +88,10 @@ func (man *manager) DecreaseBalanceBy(id string, amount float64) error {
 	errTx := man.repo.Transaction(func(repo models.WalletRepository) error {
 		wallet, err := repo.ByID(id)
 		if err != nil {
-			return fmt.Errorf("wallet %s: %w", wallet.ID(), err)
+			return fmt.Errorf("wallet %s: %w", id, err)
 		}
 
-		newBalance := wallet.Balance()-amount
+		newBalance := wallet.Balance() - amount
 		if newBalance < 0 {
 			return fmt.Errorf("wallet %s: %w", wallet.ID(), errNotEnoughBalance)
 		}
@@ -101,10 +103,14 @@ func (man *manager) DecreaseBalanceBy(id string, amount float64) error {
 }
 
 // TransferBalance перевод средств из одного кошелька в другой.
+// Перевод в рамках одного кошелька запрещена.
 // fromID - из какого кошелька переводи.
 // toID - в какой кошелек переводим.
 // amount - сумма перевода(больше 0).
 func (man *manager) TransferBalance(fromID, toID string, amount float64) error {
+	if fromID == toID {
+		return errSameWallet
+	}
 	if amount <= 0 {
 		return errAmountLessThanOne
 	}
@@ -112,23 +118,23 @@ func (man *manager) TransferBalance(fromID, toID string, amount float64) error {
 	errTx := man.repo.Transaction(func(repo models.WalletRepository) error {
 		fromWallet, err := repo.ByID(fromID)
 		if err != nil {
-			return fmt.Errorf("cannot get source wallet by id %s: %w", fromWallet.ID(), err)
+			return fmt.Errorf("cannot get source wallet by id %s: %w", fromID, err)
 		}
 		toWallet, err := repo.ByID(toID)
 		if err != nil {
-			return fmt.Errorf("cannot get dest wallet by id %s: %w", toWallet.ID(), err)
+			return fmt.Errorf("cannot get dest wallet by id %s: %w", toID, err)
 		}
 
 		if fromWallet.Balance() < amount {
 			return fmt.Errorf("wallet %s: %w", fromWallet.ID(), errNotEnoughBalance)
 		}
 
-		err = repo.UpdateByID(fromID, nil, utils.PtrFloat64(fromWallet.Balance() - amount), nil)
+		err = repo.UpdateByID(fromID, nil, utils.PtrFloat64(fromWallet.Balance()-amount), nil)
 		if err != nil {
 			return fmt.Errorf("cannot update source wallet: %w", err)
 		}
 
-		err = repo.UpdateByID(toID, nil, utils.PtrFloat64(toWallet.Balance() + amount), nil)
+		err = repo.UpdateByID(toID, nil, utils.PtrFloat64(toWallet.Balance()+amount), nil)
 		if err != nil {
 			return fmt.Errorf("cannot update dest wallet: %w", err)
 		}
@@ -143,10 +149,10 @@ func (man *manager) DeactivateByID(id string) error {
 	errTx := man.repo.Transaction(func(repo models.WalletRepository) error {
 		wallet, err := repo.ByID(id)
 		if err != nil {
-			return fmt.Errorf("cannot get wallet by id %s: %w", wallet.ID(), err)
+			return fmt.Errorf("cannot get wallet by id %s: %w", id, err)
 		}
 
-		repo.UpdateByID(id, nil, nil, utils.PtrBool(false))
+		err = repo.UpdateByID(wallet.ID(), nil, nil, utils.PtrBool(false))
 		if err != nil {
 			return fmt.Errorf("cannot update dest wallet: %w", err)
 		}

@@ -1,8 +1,10 @@
 package notify
 
 import (
+	"encoding/json"
+
 	"example.com/wallet/internal/models"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 // NewManager конструктор уведомителя операций.
@@ -20,7 +22,7 @@ func (ntf *notify) Create(name string) (models.Walleter, error) {
 		return wallet, err
 	}
 
-	ntf.sendEvent(eventWalletCreated)
+	ntf.sendEvent(eventWalletCreated, 0)
 	return wallet, nil
 }
 
@@ -37,28 +39,28 @@ func (ntf *notify) List() []models.Walleter {
 // IncreaseBalanceBy перехватываем операцию пополнения и отправляем событие в брокер.
 func (ntf *notify) IncreaseBalanceBy(id string, amount float64) error {
 	err := ntf.manWallet.IncreaseBalanceBy(id, amount)
-	ntf.sendEvent(eventWalletDeposited)
+	ntf.sendEvent(eventWalletDeposited, amount)
 	return err
 }
 
 // DecreaseBalanceBy перехватываем операцию снятия и отправляем событие в брокер.
 func (ntf *notify) DecreaseBalanceBy(id string, amount float64) error {
 	err := ntf.manWallet.DecreaseBalanceBy(id, amount)
-	ntf.sendEvent(eventWalletWithdrawn)
+	ntf.sendEvent(eventWalletWithdrawn, amount)
 	return err
 }
 
 // TransferBalance перехватываем операцию перевода и отправляем событие в брокер.
 func (ntf *notify) TransferBalance(fromID, toID string, amount float64) error {
 	err := ntf.manWallet.TransferBalance(fromID, toID, amount)
-	ntf.sendEvent(eventWalletTransfered)
+	ntf.sendEvent(eventWalletTransfered, amount)
 	return err
 }
 
 // DeactivateByID перехватываем операцию деактивации и отправляем событие в брокер.
 func (ntf *notify) DeactivateByID(id string) error {
 	err := ntf.manWallet.DeactivateByID(id)
-	ntf.sendEvent(eventWalletDeleted)
+	ntf.sendEvent(eventWalletDeleted, 0)
 	return err
 }
 
@@ -67,15 +69,23 @@ func (ntf *notify) UpdateName(id, name string) error {
 	return ntf.manWallet.UpdateName(id, name)
 }
 
-
 // sendEvent отправляем сообщение брокеру.
-// Если возникнет ошибка, то данные просто запишутся в лог.
-func (ntf *notify) sendEvent(event string) {
-	err := ntf.msgSender.Write([]byte(event))
+// Если возникнет ошибка, то данные запишутся в лог.
+func (ntf *notify) sendEvent(eventType string, amount float64) {
+	event := &eventData{
+		Type:   eventType,
+		Amount: amount,
+	}
+	bytes, err := json.Marshal(event)
 	if err != nil {
-		log.Printf("event %s not sent to nsq: %s\n", event, err.Error())
+		log.Errorf("err while marshaling event (type: %s, amount: %f): %s", event.Type, event.Amount, err.Error())
+		return
+	}
+	err = ntf.msgSender.Write(bytes)
+	if err != nil {
+		log.Errorf("event (type: %s, amount: %f) NOT sent to nsq: %s", event.Type, event.Amount, err.Error())
 		return
 	}
 
-	log.Printf("event %s sent to nsq", event)
+	log.Errorf("event (type: %s, amount: %f) sent to nsq", event.Type, event.Amount)
 }
