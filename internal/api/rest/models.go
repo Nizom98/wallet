@@ -1,6 +1,6 @@
 package rest
 
-import "example.com/wallet/internal/models"
+import "github.com/Nizom98/wallet/internal/models"
 
 type Handler struct {
 	manWallet  models.WalletManager

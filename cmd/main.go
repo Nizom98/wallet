@@ -1,14 +1,15 @@
 package main
 
 import (
-	"example.com/wallet/internal/api/rest"
-	"example.com/wallet/internal/buisness/notify"
-	"example.com/wallet/internal/buisness/wallet"
-	"example.com/wallet/internal/clients/nsq"
-	"example.com/wallet/internal/repository"
+	"net/http"
+
+	"github.com/Nizom98/wallet/internal/api/rest"
+	"github.com/Nizom98/wallet/internal/buisness/notify"
+	"github.com/Nizom98/wallet/internal/buisness/wallet"
+	"github.com/Nizom98/wallet/internal/clients/nsq"
+	"github.com/Nizom98/wallet/internal/repository"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
-	"net/http"
 )
 
 const (

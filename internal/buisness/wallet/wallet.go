@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"example.com/wallet/internal/models"
-	"example.com/wallet/internal/utils"
+	"github.com/Nizom98/wallet/internal/models"
+	"github.com/Nizom98/wallet/internal/utils"
 )
 
 const (

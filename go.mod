@@ -1,4 +1,4 @@
-module example.com/wallet
+module github.com/Nizom98/wallet
 
 go 1.19
 

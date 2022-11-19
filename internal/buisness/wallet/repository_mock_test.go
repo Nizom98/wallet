@@ -7,7 +7,7 @@ import (
 	mm_atomic "sync/atomic"
 	mm_time "time"
 
-	mm_models "example.com/wallet/internal/models"
+	mm_models "github.com/Nizom98/wallet/internal/models"
 	"github.com/gojuno/minimock/v3"
 )
 

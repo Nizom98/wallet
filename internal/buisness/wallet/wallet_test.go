@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"testing"
 
-	"example.com/wallet/internal/models"
+	"github.com/Nizom98/wallet/internal/models"
 	"github.com/stretchr/testify/assert"
 )
 
-//go:generate minimock -g -i example.com/wallet/internal/models.WalletRepository -o ./repository_mock_test.go -n RepositoryMock
+//go:generate minimock -g -i github.com/Nizom98/wallet/internal/models.WalletRepository -o ./repository_mock_test.go -n RepositoryMock
 
 func TestCreate(t *testing.T) {
 	repo := NewRepositoryMock(t)

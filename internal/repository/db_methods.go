@@ -2,7 +2,7 @@ package repository
 
 import (
 	"errors"
-	"example.com/wallet/internal/models"
+	"github.com/Nizom98/wallet/internal/models"
 	"math/rand"
 	"sync"
 	"time"
@@ -10,7 +10,7 @@ import (
 
 var (
 	errWalletNotFound = errors.New("wallet not found")
-	seededRand = rand.New(rand.NewSource(time.Now().UnixNano()))
+	seededRand        = rand.New(rand.NewSource(time.Now().UnixNano()))
 )
 
 const charset = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -27,7 +27,7 @@ type WalletRepository struct {
 func NewRepo() *WalletRepository {
 	return &WalletRepository{
 		muWallets: new(sync.RWMutex),
-		wallets: nil,
+		wallets:   nil,
 	}
 }
 
@@ -65,7 +65,6 @@ func (repo *WalletRepository) ByID(id string) (models.Walleter, error) {
 
 	return nil, errWalletNotFound
 }
-
 
 // All получение всего списка кошельков
 func (repo *WalletRepository) All() []models.Walleter {

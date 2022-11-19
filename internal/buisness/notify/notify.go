@@ -3,7 +3,7 @@ package notify
 import (
 	"encoding/json"
 
-	"example.com/wallet/internal/models"
+	"github.com/Nizom98/wallet/internal/models"
 	log "github.com/sirupsen/logrus"
 )
 

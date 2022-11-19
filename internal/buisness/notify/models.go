@@ -1,6 +1,6 @@
 package notify
 
-import "example.com/wallet/internal/models"
+import "github.com/Nizom98/wallet/internal/models"
 
 const (
 	eventWalletCreated    = "Wallet_Created"

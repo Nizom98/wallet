@@ -3,7 +3,7 @@ package repository
 import (
 	"testing"
 
-	"example.com/wallet/internal/utils"
+	"github.com/Nizom98/wallet/internal/utils"
 	"github.com/stretchr/testify/assert"
 )
 

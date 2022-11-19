@@ -2,14 +2,14 @@ package rest
 
 import (
 	"encoding/json"
-	"example.com/wallet/internal/models"
+	"github.com/Nizom98/wallet/internal/models"
 	"github.com/gorilla/mux"
 	"net/http"
 )
 
 func NewHandler(manWallet models.WalletManager, repoWallet models.WalletRepository) (*Handler, error) {
 	return &Handler{
-		manWallet: manWallet,
+		manWallet:  manWallet,
 		repoWallet: repoWallet,
 	}, nil
 }
@@ -196,22 +196,22 @@ func convertToWalletListResponse(inp []models.Walleter) []*WalletListResponse {
 	return out
 }
 
-func printError(w http.ResponseWriter, err string, status int)  {
+func printError(w http.ResponseWriter, err string, status int) {
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(
 		&StatusResponse{
-			Success: false,
-			ErrMessage:    err,
+			Success:    false,
+			ErrMessage: err,
 		},
 	)
 }
 
-func printOk(w http.ResponseWriter, data interface{})  {
+func printOk(w http.ResponseWriter, data interface{}) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(
 		&StatusResponse{
 			Success: true,
-			Data: data,
+			Data:    data,
 		},
 	)
 }
