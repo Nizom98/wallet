@@ -71,7 +71,7 @@ func (man *manager) IncreaseBalanceBy(id string, amount float64) error {
 		}
 
 		newBalance := wallet.Balance() + amount
-		return repo.UpdateByID(id, nil, utils.PtrFloat64(newBalance), nil)
+		return repo.UpdateByID(id, nil, utils.Ptr[float64](newBalance), nil)
 	})
 
 	return errTx
@@ -96,7 +96,7 @@ func (man *manager) DecreaseBalanceBy(id string, amount float64) error {
 			return fmt.Errorf("wallet %s: %w", wallet.ID(), errNotEnoughBalance)
 		}
 
-		return repo.UpdateByID(id, nil, utils.PtrFloat64(newBalance), nil)
+		return repo.UpdateByID(id, nil, utils.Ptr[float64](newBalance), nil)
 	})
 
 	return errTx
@@ -129,12 +129,12 @@ func (man *manager) TransferBalance(fromID, toID string, amount float64) error {
 			return fmt.Errorf("wallet %s: %w", fromWallet.ID(), errNotEnoughBalance)
 		}
 
-		err = repo.UpdateByID(fromID, nil, utils.PtrFloat64(fromWallet.Balance()-amount), nil)
+		err = repo.UpdateByID(fromID, nil, utils.Ptr[float64](fromWallet.Balance()-amount), nil)
 		if err != nil {
 			return fmt.Errorf("cannot update source wallet: %w", err)
 		}
 
-		err = repo.UpdateByID(toID, nil, utils.PtrFloat64(toWallet.Balance()+amount), nil)
+		err = repo.UpdateByID(toID, nil, utils.Ptr[float64](toWallet.Balance()+amount), nil)
 		if err != nil {
 			return fmt.Errorf("cannot update dest wallet: %w", err)
 		}
@@ -152,7 +152,7 @@ func (man *manager) DeactivateByID(id string) error {
 			return fmt.Errorf("cannot get wallet by id %s: %w", id, err)
 		}
 
-		err = repo.UpdateByID(wallet.ID(), nil, nil, utils.PtrBool(false))
+		err = repo.UpdateByID(wallet.ID(), nil, nil, utils.Ptr[bool](false))
 		if err != nil {
 			return fmt.Errorf("cannot update dest wallet: %w", err)
 		}
@@ -169,7 +169,7 @@ func (man *manager) UpdateName(id, name string) error {
 		return errEmptyName
 	}
 	errTx := man.repo.Transaction(func(repo models.WalletRepository) error {
-		err := repo.UpdateByID(id, utils.PtrString(name), nil, nil)
+		err := repo.UpdateByID(id, utils.Ptr[string](name), nil, nil)
 		if err != nil {
 			return fmt.Errorf("cannot update dest wallet: %w", err)
 		}

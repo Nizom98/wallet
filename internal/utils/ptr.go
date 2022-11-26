@@ -1,13 +1,5 @@
 package utils
 
-func PtrBool(in bool) *bool {
-	 return &in
-}
-
-func PtrFloat64(in float64) *float64 {
-	return &in
-}
-
-func PtrString(in string) *string {
+func Ptr[E any](in E) *E {
 	return &in
 }
